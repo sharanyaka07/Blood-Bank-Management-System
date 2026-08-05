@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Bank Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        /* ── RESET & BASE ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --crimson:       #C0182A;
+            --crimson-dark:  #8B0F1D;
+            --crimson-deep:  #5C0913;
+            --crimson-light: #E8293C;
+            --crimson-pale:  #FFF0F1;
+            --crimson-muted: #F2C4C8;
+            --white:         #FFFFFF;
+            --off-white:     #FAF8F8;
+            --gray-50:       #F8F5F5;
+            --gray-100:      #F0ECEC;
+            --gray-200:      #E2DBDB;
+            --gray-400:      #B8ADAD;
+            --gray-600:      #7A7070;
+            --gray-900:      #1C1414;
+            --success:       #1A8C4E;
+            --nav-height:    68px;
+            --shadow-nav:    0 4px 24px rgba(139,15,29,0.18);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--off-white);
+            color: var(--gray-900);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: var(--nav-height);
+            background: linear-gradient(100deg, var(--crimson-deep) 0%, var(--crimson-dark) 45%, var(--crimson) 100%);
+            box-shadow: var(--shadow-nav);
+        }
+
+        /* Subtle animated shimmer on navbar */
+        .navbar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(255,255,255,0.04) 40%,
+                rgba(255,255,255,0.08) 50%,
+                rgba(255,255,255,0.04) 60%,
+                transparent 100%
+            );
+            background-size: 200% 100%;
+            animation: nav-shimmer 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes nav-shimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            height: 100%;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Brand */
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .nav-brand::before {
+            content: '🩸';
+            font-size: 22px;
+            animation: drop-pulse 2.8s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes drop-pulse {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50%       { transform: scale(1.12) translateY(-2px); }
+        }
+
+        .nav-brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .nav-brand-main {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            color: white;
+        }
+
+        .nav-brand-sub {
+            font-size: 10px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.55);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+
+        /* Nav right */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-welcome {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 40px;
+            padding: 6px 16px 6px 6px;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-avatar {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--crimson);
+            flex-shrink: 0;
+        }
+
+        .nav-welcome-text {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.9);
+            white-space: nowrap;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            transition: all 0.22s ease;
+        }
+
+        /* Logout */
+        a.nav-link[href="/logout"] {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.22);
+            color: white;
+        }
+
+        a.nav-link[href="/logout"]:hover {
+            background: rgba(255,255,255,0.22);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Login */
+        a.nav-link[href="/login"] {
+            background: white;
+            color: var(--crimson);
+            border: 1px solid transparent;
+        }
+
+        a.nav-link[href="/login"]:hover {
+            background: var(--crimson-pale);
+            box-shadow: 0 4px 16px rgba(192,24,42,0.25);
+            transform: translateY(-1px);
+        }
+
+        /* Heartbeat rule under navbar */
+        .nav-heartbeat {
+            width: 100%;
+            height: 28px;
+            display: block;
+            overflow: visible;
+        }
+
+        .nav-heartbeat-line {
+            stroke-dasharray: 1200;
+            stroke-dashoffset: 1200;
+            animation: draw-ecg 3s ease forwards;
+        }
+
+        @keyframes draw-ecg {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* ── MAIN CONTAINER ── */
+        main.container {
+            flex: 1;
+            width: 100%;
+            /* inner pages control their own padding */
+        }
+
+        /* ── PAGE-LEVEL CONTAINERS (for non-dashboard pages) ── */
+        .page-wrapper {
+            max-width: 960px;
+            margin: 48px auto;
+            padding: 0 24px;
+        }
+
+        /* ── CARD ── */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(192,24,42,0.07);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+        }
+
+        /* ── FORM ELEMENTS (global) ── */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            color: var(--gray-900);
+            background: var(--gray-50);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--crimson);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(192,24,42,0.1);
+        }
+
+        /* ── BUTTONS (global) ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 11px 24px;
+            border-radius: 10px;
+            border: none;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.2px;
+            transition: all 0.22s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--crimson);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--crimson-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(192,24,42,0.35);
+        }
+
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--crimson);
+            border: 1.5px solid var(--crimson);
+        }
+
+        .btn-outline:hover {
+            background: var(--crimson-pale);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #146b3c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(26,140,78,0.3);
+        }
+
+        /* ── FLASH MESSAGES ── */
+        .flash {
+            max-width: 1280px;
+            margin: 16px auto 0;
+            padding: 0 32px;
+        }
+
+        .flash-msg {
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .flash-error {
+            background: var(--crimson-pale);
+            color: var(--crimson-dark);
+            border: 1px solid var(--crimson-muted);
+        }
+
+        .flash-success {
+            background: #E6F5EE;
+            color: #146b3c;
+            border: 1px solid #A7E3C4;
+        }
+
+        .flash-info {
+            background: #EFF6FF;
+            color: #1D4ED8;
+            border: 1px solid #BFDBFE;
+        }
+
+        /* ── FOOTER ── */
+        .site-footer {
+            background: var(--crimson-deep);
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            padding: 20px 32px;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .site-footer strong {
+            color: rgba(255,255,255,0.8);
+            font-weight: 600;
+        }
+
+        /* ── UTILITY CLASSES ── */
+        .text-crimson { color: var(--crimson); }
+        .text-muted   { color: var(--gray-400); }
+        .text-success { color: var(--success); }
+        .mt-8  { margin-top: 8px; }
+        .mt-16 { margin-top: 16px; }
+        .mt-24 { margin-top: 24px; }
+        .mb-16 { margin-bottom: 16px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            .nav-container { padding: 0 16px; }
+            .nav-brand-sub { display: none; }
+            .nav-welcome-text { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── NAVBAR ── -->
+    <nav class="navbar">
+        <div class="nav-container">
+
+            <!-- Brand -->
+            <a href="/" class="nav-brand">
+                <span class="nav-brand-text">
+                    <span class="nav-brand-main">BloodBank</span>
+                    <span class="nav-brand-sub">Management System</span>
+                </span>
+            </a>
+
+            <!-- Right side -->
+            <div class="nav-menu">
+                {% if session.user_id %}
+                    <div class="nav-welcome">
+                        <div class="nav-avatar">{{ session.user_name[0] | upper }}</div>
+                        <span class="nav-welcome-text">{{ session.user_name }}</span>
+                    </div>
+                    <a href="/logout" class="nav-link">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        Logout
+                    </a>
+                {% else %}
+                    <a href="/login" class="nav-link">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        Login
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Animated ECG line -->
+        <svg class="nav-heartbeat" viewBox="0 0 1200 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <polyline
+                class="nav-heartbeat-line"
+                points="0,14 140,14 160,14 172,3 180,25 188,3 196,25 204,14 280,14 420,14 440,14 452,3 460,25 468,3 476,25 484,14 560,14 700,14 720,14 732,3 740,25 748,3 756,25 764,14 840,14 980,14 1000,14 1012,3 1020,25 1028,3 1036,25 1044,14 1120,14 1200,14"
+                fill="none"
+                stroke="rgba(255,255,255,0.18)"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+        </svg>
+    </nav>
+
+    <!-- ── FLASH MESSAGES ── -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash">
+                {% for category, message in messages %}
+                    <div class="flash-msg flash-{{ category }}">
+                        {% if category == 'error' %}⚠️{% elif category == 'success' %}✅{% else %}ℹ️{% endif %}
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- ── MAIN ── -->
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ── FOOTER ── -->
+    <footer class="site-footer">
+        🩸 <strong>BloodBank</strong> Management System &nbsp;·&nbsp; Saving lives, one unit at a time.
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

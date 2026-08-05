@@ -1,0 +1,8 @@
+<<<<<<< HEAD
+Flask==2.3.2
+supabase==1.2.0
+=======
+Flask==2.3.2
+supabase==1.2.0
+>>>>>>> abeda1b5a0e77bbeba8a840c50f42885ea50dced
+python-dotenv==1.0.0

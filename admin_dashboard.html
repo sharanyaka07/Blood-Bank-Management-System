@@ -1,0 +1,830 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --crimson: #C0182A;
+    --crimson-dark: #8B0F1D;
+    --crimson-light: #E8293C;
+    --crimson-pale: #FFF0F1;
+    --crimson-muted: #F7D5D8;
+    --white: #FFFFFF;
+    --off-white: #FAF8F8;
+    --gray-100: #F5F3F3;
+    --gray-200: #E8E4E4;
+    --gray-400: #B0A8A8;
+    --gray-600: #7A7070;
+    --gray-900: #1C1414;
+    --success: #1A8C4E;
+    --success-light: #E6F5EE;
+    --warning: #D97706;
+    --warning-light: #FEF3C7;
+    --shadow-sm: 0 2px 8px rgba(192,24,42,0.08);
+    --shadow-md: 0 8px 24px rgba(192,24,42,0.12);
+    --shadow-lg: 0 20px 60px rgba(192,24,42,0.18);
+    --radius: 16px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .dashboard {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--off-white);
+    min-height: 100vh;
+    color: var(--gray-900);
+    padding: 0;
+  }
+
+  /* ── HEADER ── */
+  .dash-header {
+    background: linear-gradient(135deg, var(--crimson-dark) 0%, var(--crimson) 60%, var(--crimson-light) 100%);
+    padding: 36px 48px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dash-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+
+  .dash-header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 30%;
+    width: 180px; height: 180px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    position: relative; z-index: 1;
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .blood-drop-icon {
+    width: 48px; height: 48px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50% 50% 50% 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    animation: pulse-drop 2.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse-drop {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(255,255,255,0); }
+  }
+
+  .brand-text h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.3px;
+  }
+
+  .brand-text p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    font-weight: 300;
+  }
+
+  .header-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 40px;
+    padding: 8px 18px 8px 8px;
+    backdrop-filter: blur(10px);
+  }
+
+  .user-avatar {
+    width: 34px; height: 34px;
+    background: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--crimson);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .user-info {
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* ── TABS ── */
+  .dashboard-tabs {
+    display: flex;
+    gap: 4px;
+    position: relative; z-index: 1;
+    padding: 0 4px;
+  }
+
+  .tab-btn {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.75);
+    padding: 12px 24px;
+    border-radius: 12px 12px 0 0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    letter-spacing: 0.2px;
+    backdrop-filter: blur(8px);
+  }
+
+  .tab-btn:hover {
+    background: rgba(255,255,255,0.2);
+    color: white;
+  }
+
+  .tab-btn.active {
+    background: var(--off-white);
+    border-color: transparent;
+    color: var(--crimson);
+    font-weight: 600;
+  }
+
+  /* ── CONTENT AREA ── */
+  .tab-content {
+    display: none;
+    padding: 40px 48px;
+    animation: fadeSlide 0.3s ease;
+  }
+
+  .tab-content.active { display: block; }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .section-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--gray-900);
+    letter-spacing: -0.4px;
+  }
+
+  .section-badge {
+    background: var(--crimson-pale);
+    color: var(--crimson);
+    border: 1px solid var(--crimson-muted);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* ── TABLE ── */
+  .table-wrapper {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .data-table thead {
+    background: linear-gradient(90deg, var(--gray-100) 0%, #f0ecec 100%);
+  }
+
+  .data-table thead th {
+    padding: 14px 18px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 2px solid var(--crimson-muted);
+    white-space: nowrap;
+  }
+
+  .data-table thead th:first-child {
+    border-left: 4px solid var(--crimson);
+  }
+
+  .data-table tbody tr {
+    border-bottom: 1px solid var(--gray-100);
+    transition: background 0.18s ease;
+  }
+
+  .data-table tbody tr:last-child { border-bottom: none; }
+
+  .data-table tbody tr:hover {
+    background: var(--crimson-pale);
+  }
+
+  .data-table tbody td {
+    padding: 14px 18px;
+    font-size: 14px;
+    color: var(--gray-900);
+    vertical-align: middle;
+  }
+
+  .data-table tbody td:first-child {
+    font-weight: 600;
+    color: var(--gray-600);
+    font-size: 12px;
+    border-left: 4px solid transparent;
+  }
+
+  .data-table tbody tr:hover td:first-child {
+    border-left-color: var(--crimson);
+  }
+
+  /* Blood group pill */
+  .blood-pill {
+    display: inline-block;
+    background: var(--crimson);
+    color: white;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+
+  /* Stock input */
+  .stock-input {
+    width: 80px;
+    padding: 7px 10px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-900);
+    text-align: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  .stock-input:focus {
+    border-color: var(--crimson);
+    box-shadow: 0 0 0 3px rgba(192,24,42,0.1);
+  }
+
+  /* ── BUTTONS ── */
+  .btn-update {
+    background: var(--crimson);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.2px;
+  }
+
+  .btn-update:hover {
+    background: var(--crimson-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(192,24,42,0.35);
+  }
+
+  .btn-update:active { transform: translateY(0); }
+
+  .btn-accept {
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-accept:hover {
+    background: #146b3c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26,140,78,0.35);
+  }
+
+  .btn-fulfill {
+    background: var(--crimson);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-fulfill:hover {
+    background: var(--crimson-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(192,24,42,0.35);
+  }
+
+  .btn-revert {
+    background: white;
+    color: var(--warning);
+    border: 1.5px solid var(--warning);
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-revert:hover {
+    background: var(--warning-light);
+  }
+
+  /* Status badges */
+  .badge-accepted {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--success-light);
+    color: var(--success);
+    border: 1px solid rgba(26,140,78,0.2);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .badge-accepted::before { content: '✓'; font-weight: 700; }
+
+  .badge-fulfilled {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--success-light);
+    color: var(--success);
+    border: 1px solid rgba(26,140,78,0.2);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .badge-other {
+    display: inline-block;
+    background: var(--gray-100);
+    color: var(--gray-600);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .status-pending {
+    display: inline-block;
+    background: #FEF3C7;
+    color: #92400E;
+    border: 1px solid #FDE68A;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Priority pill */
+  .priority-high { color: var(--crimson); font-weight: 700; }
+  .priority-medium { color: var(--warning); font-weight: 600; }
+  .priority-low { color: var(--success); font-weight: 600; }
+
+  /* Transaction type */
+  .type-in { color: var(--success); font-weight: 600; font-size: 13px; }
+  .type-out { color: var(--crimson); font-weight: 600; font-size: 13px; }
+
+  /* Alert toast */
+  .alert-toast {
+    position: fixed;
+    top: 24px; right: 24px;
+    max-width: 380px;
+    padding: 16px 20px;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateX(120%);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: var(--shadow-lg);
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .alert-toast.show { opacity: 1; transform: translateX(0); }
+
+  .alert-toast.success { background: white; border-left: 4px solid var(--success); color: var(--gray-900); }
+  .alert-toast.danger { background: white; border-left: 4px solid var(--crimson); color: var(--gray-900); }
+
+  .alert-icon { font-size: 20px; }
+
+  /* Decorative heartbeat line in header */
+  .heartbeat-bar {
+    height: 3px;
+    background: transparent;
+    margin-top: 28px;
+    position: relative;
+    overflow: visible;
+  }
+
+  .heartbeat-svg {
+    width: 100%;
+    height: 40px;
+    margin-top: -18px;
+    opacity: 0.25;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gray-400);
+  }
+
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 15px; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .dash-header, .tab-content { padding-left: 20px; padding-right: 20px; }
+    .dashboard-tabs { overflow-x: auto; }
+    .tab-btn { white-space: nowrap; }
+    .data-table { font-size: 13px; }
+  }
+</style>
+
+<div class="dashboard">
+
+  <!-- HEADER -->
+  <div class="dash-header">
+    <div class="header-top">
+      <div class="header-brand">
+        <div class="blood-drop-icon">🩸</div>
+        <div class="brand-text">
+          <h1>BloodBank Admin</h1>
+          <p>Inventory & Donor Management System</p>
+        </div>
+      </div>
+      <div class="header-user">
+        <div class="user-avatar">{{ user_name[0] | upper }}</div>
+        <div class="user-info">{{ user_name }}</div>
+      </div>
+    </div>
+
+    <div class="dashboard-tabs">
+      <button class="tab-btn active" onclick="showTab('stock')">🩸 Blood Stock</button>
+      <button class="tab-btn" onclick="showTab('transactions')">📋 Transactions</button>
+      <button class="tab-btn" onclick="showTab('donors')">👤 All Donors</button>
+      <button class="tab-btn" onclick="showTab('requests')">🏥 All Requests</button>
+    </div>
+
+    <svg class="heartbeat-svg" viewBox="0 0 1200 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="0,20 120,20 150,4 165,36 180,4 195,36 210,20 360,20 390,20 420,4 435,36 450,4 465,36 480,20 600,20 630,20 660,4 675,36 690,4 705,36 720,20 900,20 930,20 960,4 975,36 990,4 1005,36 1020,20 1200,20"
+        fill="none" stroke="white" stroke-width="2"/>
+    </svg>
+  </div>
+
+  <!-- BLOOD STOCK TAB -->
+  <div id="stock-tab" class="tab-content active">
+    <div class="section-header">
+      <h2>Blood Stock Management</h2>
+      <span class="section-badge">Live Inventory</span>
+    </div>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Stock ID</th>
+            <th>Blood Group</th>
+            <th>Units Available</th>
+            <th>Expiry Date</th>
+            <th>Donation Date</th>
+            <th>Donor ID</th>
+            <th>Last Updated</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for stock in blood_stock %}
+          <tr>
+            <td>#{{ stock.id }}</td>
+            <td><span class="blood-pill">{{ stock.blood_group }}</span></td>
+            <td>
+              <input class="stock-input" type="number" id="units_{{ stock.id }}" value="{{ stock.units_available | default(0) }}">
+            </td>
+            <td>{{ stock.expiry_date }}</td>
+            <td>{{ stock.donation_date }}</td>
+            <td>{{ stock.donor_id }}</td>
+            <td>{{ stock.last_updated }}</td>
+            <td>
+              <button class="btn-update update-stock-btn" data-stock-id="{{ stock.id }}">Update</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TRANSACTIONS TAB -->
+  <div id="transactions-tab" class="tab-content">
+    <div class="section-header">
+      <h2>Blood Transactions</h2>
+      <span class="section-badge">Full History</span>
+    </div>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Transaction ID</th>
+            <th>Blood Group</th>
+            <th>Units</th>
+            <th>Donor / Request ID</th>
+            <th>Type</th>
+            <th>Date &amp; Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for transaction in transactions %}
+          <tr>
+            <td>#{{ transaction.id }}</td>
+            <td><span class="blood-pill">{{ transaction.blood_group }}</span></td>
+            <td>{{ transaction.blood_units }}</td>
+            <td>{{ transaction.donor_request_id }}</td>
+            <td>
+              <span class="{{ 'type-in' if transaction.transaction_type|lower in ['donation','in'] else 'type-out' }}">
+                {{ '↑ ' if transaction.transaction_type|lower in ['donation','in'] else '↓ ' }}{{ transaction.transaction_type }}
+              </span>
+            </td>
+            <td>{{ transaction.date_time }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DONORS TAB -->
+  <div id="donors-tab" class="tab-content">
+    <div class="section-header">
+      <h2>All Donors</h2>
+      <span class="section-badge">Registered</span>
+    </div>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Blood Group</th>
+            <th>Contact</th>
+            <th>Donation Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for donor in donors %}
+          <tr>
+            <td>#{{ donor.id }}</td>
+            <td><strong>{{ donor.full_name }}</strong></td>
+            <td>{{ donor.age }}</td>
+            <td><span class="blood-pill">{{ donor.blood_group }}</span></td>
+            <td>{{ donor.contact_number }}</td>
+            <td>{{ donor.donation_date }}</td>
+            <td>
+              {% if donor.status == 'pending' %}
+                <span class="status-pending">Pending</span>
+              {% elif donor.status == 'accepted' %}
+                <span class="badge-accepted">Accepted</span>
+              {% else %}
+                <span class="badge-other">{{ donor.status | capitalize }}</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if donor.status == 'pending' %}
+                <button class="btn-accept accept-donor-btn" data-id="{{ donor.id }}">Accept Donation</button>
+              {% elif donor.status == 'accepted' %}
+                <span class="badge-accepted">Accepted</span>
+              {% else %}
+                <span class="badge-other">{{ donor.status | capitalize }}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- REQUESTS TAB -->
+  <div id="requests-tab" class="tab-content">
+    <div class="section-header">
+      <h2>All Blood Requests</h2>
+      <span class="section-badge">Queue</span>
+    </div>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Blood Group</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for request in requests %}
+          <tr>
+            <td>#{{ request.id }}</td>
+            <td><strong>{{ request.name }}</strong></td>
+            <td>{{ request.age }}</td>
+            <td><span class="blood-pill">{{ request.blood_group }}</span></td>
+            <td>
+              <span class="priority-{{ request.priority | lower }}">
+                {% if request.priority | lower == 'high' %}🔴{% elif request.priority | lower == 'medium' %}🟡{% else %}🟢{% endif %}
+                {{ request.priority }}
+              </span>
+            </td>
+            <td>
+              {% if request.status == 'pending' %}
+                <span class="status-pending">Pending</span>
+              {% elif request.status == 'fulfilled' %}
+                <span class="badge-fulfilled">Fulfilled</span>
+              {% else %}
+                <span class="badge-other">{{ request.status }}</span>
+              {% endif %}
+            </td>
+          
+  <td>
+  {% if request.status == 'pending' %}
+    <button class="btn-fulfill fulfill-btn" data-id="{{ request.id }}">Fulfill</button>
+  {% else %}
+    <span class="badge-other">Fulfilled</span>
+  {% endif %}
+</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Alert Toast -->
+<div id="alert-toast" class="alert-toast">
+  <span class="alert-icon" id="alert-icon"></span>
+  <span id="alert-message"></span>
+</div>
+
+<script>
+function showTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  const targetTab = document.getElementById(tabName + '-tab');
+  if (targetTab) targetTab.classList.add('active');
+  const activeBtn = document.querySelector(`.tab-btn[onclick*="showTab('${tabName}')"]`);
+  if (activeBtn) activeBtn.classList.add('active');
+}
+
+function showAlert(message, type) {
+  const toast = document.getElementById('alert-toast');
+  const icon = document.getElementById('alert-icon');
+  document.getElementById('alert-message').textContent = message;
+  toast.className = 'alert-toast ' + type;
+  icon.textContent = type === 'success' ? '✅' : '❌';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+document.addEventListener('click', function(e) {
+  const target = e.target;
+
+  // Update stock
+  if (target.classList.contains('update-stock-btn')) {
+    const stockId = target.dataset.stockId;
+    const input = document.getElementById(`units_${stockId}`);
+    if (!input) return;
+    const units = input.value.trim();
+    if (!units || isNaN(units) || Number(units) < 0) {
+      showAlert("Please enter a valid non-negative number.", 'danger');
+      return;
+    }
+    fetch('/admin/update_stock', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `stock_id=${encodeURIComponent(stockId)}&units_available=${encodeURIComponent(units)}`
+    })
+    .then(r => r.json())
+    .then(data => {
+      showAlert(data.message || "Stock updated!", data.success ? 'success' : 'danger');
+      if (data.success) setTimeout(() => location.reload(), 1600);
+    })
+    .catch(err => showAlert("Update error: " + err.message, 'danger'));
+  }
+
+  // Accept donor
+  if (target.classList.contains('accept-donor-btn')) {
+    e.preventDefault();
+    const donorId = target.dataset.id;
+    if (!confirm("Accept this donation? This will add 1 unit to the blood stock.")) return;
+    fetch(`/admin/accept_donor/${donorId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    })
+    .then(response => {
+      if (!response.ok) return response.json().then(errData => { throw new Error(errData.message || 'Failed to accept donation'); });
+      return response.json();
+    })
+    .then(data => {
+      showAlert(data.message || 'Donation accepted successfully! Stock updated.', 'success');
+      setTimeout(() => location.reload(), 1600);
+    })
+    .catch(error => {
+      console.error('Accept error:', error);
+      showAlert(error.message || 'Error accepting donation', 'danger');
+    });
+  }
+
+  // Fulfill request
+  if (target.classList.contains('fulfill-btn')) {
+    const requestId = target.dataset.id;
+    if (!confirm("Fulfill this request? (1 unit will be deducted from stock)")) return;
+    fetch(`/admin/fulfill_request/${requestId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    })
+    .then(response => {
+      if (!response.ok) return response.json().then(errData => { throw new Error(errData.message || 'Error fulfilling request'); });
+      return response.json();
+    })
+    .then(data => {
+      showAlert(data.message || 'Request fulfilled successfully!', 'success');
+      if (data.success) setTimeout(() => location.reload(), 1600);
+    })
+    .catch(error => {
+      console.error('Fulfill error:', error);
+      showAlert(error.message || 'Error fulfilling request', 'danger');
+    });
+  }
+});
+</script>
+{% endblock %}

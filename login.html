@@ -1,0 +1,410 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  /* ── PAGE WRAP ── */
+  .auth-page {
+    min-height: calc(100vh - 68px);
+    background: var(--off-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .auth-page::before {
+    content: '';
+    position: absolute;
+    top: -160px; right: -160px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(192,24,42,0.07) 0%, transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .auth-page::after {
+    content: '';
+    position: absolute;
+    bottom: -120px; left: -120px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(192,24,42,0.05) 0%, transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* ── CARD ── */
+  .auth-card {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 8px 48px rgba(192,24,42,0.1), 0 2px 12px rgba(28,20,20,0.06);
+    width: 100%;
+    max-width: 460px;
+    padding: 48px 44px;
+    position: relative;
+    z-index: 1;
+    animation: card-in 0.45s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(24px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 48px; right: 48px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--crimson-dark), var(--crimson-light));
+    border-radius: 0 0 4px 4px;
+  }
+
+  /* ── HEADER ── */
+  .auth-card-header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .auth-drop {
+    font-size: 52px;
+    display: block;
+    margin-bottom: 14px;
+    animation: drop-bob 3s ease-in-out infinite;
+    filter: drop-shadow(0 6px 16px rgba(192,24,42,0.2));
+  }
+
+  @keyframes drop-bob {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+  }
+
+  .auth-card-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--gray-900);
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+
+  .auth-card-header p {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 300;
+  }
+
+  /* ── ERROR ── */
+  .alert-error {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: var(--crimson-pale);
+    border: 1px solid var(--crimson-muted);
+    color: var(--crimson-dark);
+    padding: 11px 15px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 500;
+    margin-bottom: 24px;
+  }
+
+  /* ── FORM ── */
+  .auth-form .form-group { margin-bottom: 18px; }
+
+  .auth-form .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 7px;
+  }
+
+  .input-wrap { position: relative; }
+
+  .input-icon {
+    position: absolute;
+    left: 13px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    pointer-events: none;
+    opacity: 0.45;
+  }
+
+  .input-wrap.is-textarea .input-icon { top: 13px; transform: none; }
+
+  .auth-form .form-control {
+    width: 100%;
+    padding: 12px 14px 12px 40px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--gray-900);
+    background: var(--gray-50);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .auth-form .form-control::placeholder { color: var(--gray-400); font-weight: 300; }
+
+  .auth-form .form-control:focus {
+    border-color: var(--crimson);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(192,24,42,0.09);
+  }
+
+  .auth-form textarea.form-control {
+    resize: vertical;
+    min-height: 90px;
+    padding-top: 12px;
+  }
+
+  /* ── BUTTON ── */
+  .btn-auth {
+    width: 100%;
+    padding: 14px;
+    margin-top: 6px;
+    background: linear-gradient(90deg, var(--crimson-dark) 0%, var(--crimson-light) 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .btn-auth:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(192,24,42,0.38);
+  }
+
+  .btn-auth:active { transform: translateY(0); box-shadow: none; }
+
+  /* ── DIVIDER ── */
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 28px 0;
+    color: var(--gray-400);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .auth-divider::before,
+  .auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-200);
+  }
+
+  /* ── SWITCH LINK ── */
+  .auth-switch {
+    text-align: center;
+    font-size: 14px;
+    color: var(--gray-600);
+  }
+
+  .auth-switch a {
+    color: var(--crimson);
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .auth-switch a:hover {
+    color: var(--crimson-dark);
+    text-decoration: underline;
+  }
+
+  /* ── TOAST ── */
+  .auth-toast {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    max-width: 360px;
+    background: white;
+    border-radius: 14px;
+    padding: 14px 18px;
+    box-shadow: 0 12px 40px rgba(28,20,20,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-900);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events: none;
+  }
+
+  .auth-toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .auth-toast.success { border-left: 4px solid var(--success); }
+  .auth-toast.danger  { border-left: 4px solid var(--crimson); }
+
+  @media (max-width: 520px) {
+    .auth-card { padding: 36px 24px; }
+  }
+</style>
+
+<div class="auth-page">
+
+  <!-- ═══ LOGIN CARD ═══ -->
+  <div class="auth-card" id="login-card">
+
+    <div class="auth-card-header">
+      <span class="auth-drop">🩸</span>
+      <h2>Welcome Back</h2>
+      <p>Sign in to your BloodBank account</p>
+    </div>
+
+    {% if error %}
+      <div class="alert-error">⚠️ {{ error }}</div>
+    {% endif %}
+
+    <form id="loginForm" class="auth-form" method="POST" action="/login">
+      <div class="form-group">
+        <label class="form-label" for="email">Email Address</label>
+        <div class="input-wrap">
+          <span class="input-icon">✉️</span>
+          <input class="form-control" type="email" id="email" name="email" placeholder="you@example.com" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input class="form-control" type="password" id="password" name="password" placeholder="Enter your password" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-auth">Sign In →</button>
+    </form>
+
+    <div class="auth-divider">new here?</div>
+
+    <p class="auth-switch">
+      Don't have an account?
+      <a href="#" onclick="showCard('register'); return false;">Create one here →</a>
+    </p>
+
+  </div>
+
+  <!-- ═══ REGISTER CARD ═══ -->
+  <div class="auth-card" id="register-card" style="display:none;">
+
+    <div class="auth-card-header">
+      <span class="auth-drop">🩸</span>
+      <h2>Create Account</h2>
+      <p>Join and start saving lives today</p>
+    </div>
+
+    <form id="registerForm" class="auth-form">
+      <div class="form-group">
+        <label class="form-label" for="reg_name">Full Name</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input class="form-control" type="text" id="reg_name" name="name" placeholder="Your full name" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="reg_email">Email Address</label>
+        <div class="input-wrap">
+          <span class="input-icon">✉️</span>
+          <input class="form-control" type="email" id="reg_email" name="email" placeholder="you@example.com" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="reg_password">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input class="form-control" type="password" id="reg_password" name="password" placeholder="Create a strong password" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="reg_address">Address</label>
+        <div class="input-wrap is-textarea">
+          <span class="input-icon">📍</span>
+          <textarea class="form-control" id="reg_address" name="address" placeholder="Your full address" required></textarea>
+        </div>
+      </div>
+
+      <button type="button" onclick="registerUser()" class="btn-auth">Create Account →</button>
+    </form>
+
+    <div class="auth-divider">already a member?</div>
+
+    <p class="auth-switch">
+      Already have an account?
+      <a href="#" onclick="showCard('login'); return false;">Sign in here →</a>
+    </p>
+
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div id="auth-toast" class="auth-toast">
+  <span id="toast-icon"></span>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+  function showCard(which) {
+    const login    = document.getElementById('login-card');
+    const register = document.getElementById('register-card');
+    const hide = which === 'login' ? register : login;
+    const show = which === 'login' ? login    : register;
+
+    hide.style.display = 'none';
+    show.style.display = 'block';
+    // re-trigger entrance animation
+    show.style.animation = 'none';
+    void show.offsetWidth;
+    show.style.animation = 'card-in 0.4s cubic-bezier(0.22,1,0.36,1) both';
+  }
+
+  function showToast(message, type) {
+    const toast = document.getElementById('auth-toast');
+    document.getElementById('toast-msg').textContent  = message;
+    document.getElementById('toast-icon').textContent = type === 'success' ? '✅' : '❌';
+    toast.className = 'auth-toast ' + type + ' show';
+    setTimeout(() => toast.classList.remove('show'), 3800);
+  }
+
+  function registerUser() {
+    const formData = new FormData(document.getElementById('registerForm'));
+    fetch('/register', { method: 'POST', body: formData })
+      .then(r => r.json())
+      .then(data => {
+        showToast(data.message, data.success ? 'success' : 'danger');
+        if (data.success) {
+          document.getElementById('registerForm').reset();
+          setTimeout(() => showCard('login'), 1600);
+        }
+      })
+      .catch(() => showToast('Something went wrong. Please try again.', 'danger'));
+  }
+</script>
+
+{% endblock %}

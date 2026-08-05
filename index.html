@@ -1,0 +1,505 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+  /* ── HERO ── */
+  .hero-section {
+    position: relative;
+    min-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 24px 120px;
+    overflow: hidden;
+    background: linear-gradient(160deg, var(--crimson-deep) 0%, var(--crimson-dark) 40%, var(--crimson) 100%);
+  }
+
+  /* Ambient orbs */
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: -120px; right: -120px;
+    width: 520px; height: 520px;
+    background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: orb-float 7s ease-in-out infinite;
+  }
+
+  .hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -80px;
+    width: 380px; height: 380px;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: orb-float 9s ease-in-out infinite reverse;
+  }
+
+  @keyframes orb-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%       { transform: translate(20px, -20px) scale(1.05); }
+  }
+
+  /* Dot grid texture */
+  .hero-dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+
+  /* ECG stripe across hero */
+  .hero-ecg {
+    position: absolute;
+    bottom: 60px;
+    left: 0; right: 0;
+    height: 50px;
+    opacity: 0.15;
+    pointer-events: none;
+  }
+
+  .hero-ecg-line {
+    stroke-dasharray: 1400;
+    stroke-dashoffset: 1400;
+    animation: ecg-draw 2.5s ease-out 0.6s forwards;
+  }
+
+  @keyframes ecg-draw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Big drop icon */
+  .hero-icon {
+    position: relative; z-index: 1;
+    font-size: 72px;
+    margin-bottom: 28px;
+    animation: hero-drop 3s ease-in-out infinite;
+    filter: drop-shadow(0 12px 32px rgba(0,0,0,0.3));
+  }
+
+  @keyframes hero-drop {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50%       { transform: translateY(-10px) scale(1.05); }
+  }
+
+  .hero-section h1 {
+    position: relative; z-index: 1;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 700;
+    color: white;
+    letter-spacing: -1.5px;
+    line-height: 1.08;
+    max-width: 760px;
+    margin-bottom: 20px;
+    animation: hero-reveal 0.8s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  @keyframes hero-reveal {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-section p {
+    position: relative; z-index: 1;
+    font-size: clamp(16px, 2.5vw, 20px);
+    color: rgba(255,255,255,0.72);
+    font-weight: 300;
+    max-width: 520px;
+    line-height: 1.65;
+    margin-bottom: 40px;
+    animation: hero-reveal 0.8s cubic-bezier(0.22,1,0.36,1) 0.15s both;
+  }
+
+  .hero-buttons {
+    position: relative; z-index: 1;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: hero-reveal 0.8s cubic-bezier(0.22,1,0.36,1) 0.3s both;
+  }
+
+  .btn-hero-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 15px 36px;
+    background: white;
+    color: var(--crimson);
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 0.2px;
+    transition: all 0.25s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+
+  .btn-hero-primary:hover {
+    background: var(--crimson-pale);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.28);
+  }
+
+  .btn-hero-primary:active { transform: translateY(0); }
+
+  .btn-hero-primary .arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+
+  .btn-hero-primary:hover .arrow { transform: translateX(4px); }
+
+  /* Trust strip */
+  .hero-trust {
+    position: relative; z-index: 1;
+    display: flex;
+    gap: 32px;
+    margin-top: 56px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: hero-reveal 0.8s cubic-bezier(0.22,1,0.36,1) 0.45s both;
+  }
+
+  .trust-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .trust-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+  }
+
+  .trust-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  .trust-divider {
+    width: 1px;
+    height: 48px;
+    background: rgba(255,255,255,0.2);
+    align-self: center;
+  }
+
+  /* Wave connector between hero and features */
+  .hero-wave {
+    display: block;
+    width: 100%;
+    margin-top: -2px;
+    background: var(--crimson);
+    line-height: 0;
+  }
+
+  .hero-wave svg {
+    display: block;
+    width: 100%;
+  }
+
+  /* ── FEATURES ── */
+  .features-section {
+    background: var(--off-white);
+    padding: 88px 24px 100px;
+  }
+
+  .features-label {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--crimson);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+  }
+
+  .features-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700;
+    color: var(--gray-900);
+    text-align: center;
+    margin-bottom: 12px;
+    letter-spacing: -0.6px;
+  }
+
+  .features-subtitle {
+    text-align: center;
+    color: var(--gray-600);
+    font-size: 16px;
+    font-weight: 300;
+    margin-bottom: 64px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 28px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .feature-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px 32px;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 2px 12px rgba(192,24,42,0.06);
+    transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Hover accent glow */
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--crimson-dark), var(--crimson-light));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+    border-radius: 3px 3px 0 0;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 56px rgba(192,24,42,0.14);
+    border-color: var(--crimson-muted);
+  }
+
+  .feature-card:hover::before { transform: scaleX(1); }
+
+  .feature-icon-wrap {
+    width: 64px; height: 64px;
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    margin-bottom: 24px;
+    transition: transform 0.3s ease;
+  }
+
+  .feature-card:hover .feature-icon-wrap { transform: scale(1.08) rotate(-3deg); }
+
+  .icon-red   { background: var(--crimson-pale); }
+  .icon-pink  { background: #FEE2E2; }
+  .icon-rose  { background: #FFF1F2; }
+
+  .feature-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 12px;
+    letter-spacing: -0.3px;
+  }
+
+  .feature-card p {
+    font-size: 15px;
+    color: var(--gray-600);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .feature-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--crimson);
+    text-decoration: none;
+    letter-spacing: 0.2px;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.25s, transform 0.25s;
+  }
+
+  .feature-card:hover .feature-link {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* ── CTA BANNER ── */
+  .cta-banner {
+    background: linear-gradient(110deg, var(--crimson-deep) 0%, var(--crimson) 100%);
+    padding: 72px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-banner::before {
+    content: '🩸';
+    position: absolute;
+    font-size: 200px;
+    opacity: 0.05;
+    top: -30px; right: 5%;
+    pointer-events: none;
+  }
+
+  .cta-banner h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4vw, 44px);
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.6px;
+    margin-bottom: 14px;
+  }
+
+  .cta-banner p {
+    color: rgba(255,255,255,0.65);
+    font-size: 17px;
+    font-weight: 300;
+    margin-bottom: 36px;
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .btn-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 15px 40px;
+    background: white;
+    color: var(--crimson);
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.2);
+    letter-spacing: 0.2px;
+  }
+
+  .btn-cta:hover {
+    background: var(--crimson-pale);
+    transform: translateY(-3px);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .trust-divider { display: none; }
+    .hero-trust { gap: 20px; }
+    .features { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- ── HERO ── -->
+<section class="hero-section">
+  <div class="hero-dots"></div>
+
+  <div class="hero-icon">🩸</div>
+
+  <h1>Every Drop<br>Saves a Life</h1>
+  <p>Connect donors with patients in need. Manage blood inventory, track donations, and respond to emergencies — all in one place.</p>
+
+  <div class="hero-buttons">
+    <a href="/login" class="btn-hero-primary">
+      Get Started <span class="arrow">→</span>
+    </a>
+  </div>
+
+  <div class="hero-trust">
+    <div class="trust-item">
+      <span class="trust-number">10k+</span>
+      <span class="trust-label">Donors</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <span class="trust-number">8</span>
+      <span class="trust-label">Blood Types</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <span class="trust-number">24/7</span>
+      <span class="trust-label">Support</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <span class="trust-number">500+</span>
+      <span class="trust-label">Lives Saved</span>
+    </div>
+  </div>
+
+  <!-- ECG line -->
+  <svg class="hero-ecg" viewBox="0 0 1440 50" preserveAspectRatio="none">
+    <polyline
+      class="hero-ecg-line"
+      points="0,25 180,25 200,25 214,5 222,45 230,5 238,45 246,25 300,25 480,25 500,25 514,5 522,45 530,5 538,45 546,25 600,25 780,25 800,25 814,5 822,45 830,5 838,45 846,25 900,25 1080,25 1100,25 1114,5 1122,45 1130,5 1138,45 1146,25 1200,25 1440,25"
+      fill="none" stroke="white" stroke-width="1.8"
+      stroke-linecap="round" stroke-linejoin="round"
+    />
+  </svg>
+</section>
+
+<!-- Wave -->
+<div class="hero-wave">
+  <svg viewBox="0 0 1440 56" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 C360,56 1080,0 1440,40 L1440,0 Z" fill="#FAF8F8"/>
+  </svg>
+</div>
+
+<!-- ── FEATURES ── -->
+<section class="features-section">
+  <p class="features-label">What We Offer</p>
+  <h2 class="features-title">How It Works</h2>
+  <p class="features-subtitle">Simple, fast, and life-saving. Here's how our platform supports every step of the process.</p>
+
+  <div class="features">
+
+    <div class="feature-card">
+      <div class="feature-icon-wrap icon-red">🫀</div>
+      <h3>Donate Blood</h3>
+      <p>Register as a donor and schedule your donation. Every unit you give can save up to three lives.</p>
+      <a href="/login" class="feature-link">Become a donor →</a>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon-wrap icon-pink">🏥</div>
+      <h3>Request Blood</h3>
+      <p>Submit an urgent blood request for patients in need. Our admin team reviews and fulfills requests from available stock.</p>
+      <a href="/login" class="feature-link">Make a request →</a>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon-wrap icon-rose">🚨</div>
+      <h3>Emergency Support</h3>
+      <p>Around-the-clock emergency blood support. Critical requests are prioritized and processed immediately.</p>
+      <a href="/login" class="feature-link">Learn more →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-banner">
+  <h2>Ready to Make a Difference?</h2>
+  <p>Join thousands of donors and help save lives in your community today.</p>
+  <a href="/login" class="btn-cta">
+    🩸 &nbsp;Get Started Now
+  </a>
+</section>
+
+{% endblock %}
